@@ -69,12 +69,12 @@ common:
 	# ADDON_INCLUDES_EXCLUDE =
 	
 linux64:
-	ADDON_LDFLAGS = ${OF_ROOT}/addons/ofxLeapMotion2/libs/lib/linux/libLeap.so
-	ADDON_LDFLAGS += -Wl,-rpath=${OF_ROOT}/addons/ofxLeapMotion2/libs/lib/linux
+	#ADDON_LDFLAGS = ${OF_ROOT}/addons/ofxLeapMotion2/libs/lib/linux/libLeap.so
+	#ADDON_LDFLAGS += -Wl,-rpath=${OF_ROOT}/addons/ofxLeapMotion2/libs/lib/linux
 	
 linux:
-	ADDON_LDFLAGS = ${OF_ROOT}/addons/ofxLeapMotion2/libs/lib/linux/libLeap.so
-	ADDON_LDFLAGS += -Wl,-rpath=${OF_ROOT}/addons/ofxLeapMotion2/libs/lib/linux
+	#ADDON_LDFLAGS = ${OF_ROOT}/addons/ofxLeapMotion2/libs/lib/linux/libLeap.so
+	#ADDON_LDFLAGS += -Wl,-rpath=${OF_ROOT}/addons/ofxLeapMotion2/libs/lib/linux
 	
 msys2:
 	

@@ -105,7 +105,7 @@ void ofApp::draw(){
 	cam.begin();
     
 	ofPushMatrix();
-    ofRotate(90, 0, 0, 1);
+    ofRotateDeg(90, 0, 0, 1);
     ofSetColor(20);
     ofDrawGridPlane(800, 20, false);
 	ofPopMatrix();
@@ -137,9 +137,9 @@ void ofApp::draw(){
             
             ofSetColor(255, 0, 0);
             ofSetLineWidth(20);
-            ofLine(mcp.x, mcp.y, mcp.z, pip.x, pip.y, pip.z);
-            ofLine(pip.x, pip.y, pip.z, dip.x, dip.y, dip.z);
-            ofLine(dip.x, dip.y, dip.z, tip.x, tip.y, tip.z);
+            ofDrawLine(mcp.x, mcp.y, mcp.z, pip.x, pip.y, pip.z);
+            ofDrawLine(pip.x, pip.y, pip.z, dip.x, dip.y, dip.z);
+            ofDrawLine(dip.x, dip.y, dip.z, tip.x, tip.y, tip.z);
         }
     }
 	cam.end();
