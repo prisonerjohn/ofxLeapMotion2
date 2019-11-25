@@ -42,8 +42,11 @@ Rename the project in Xcode (do not rename the .xcodeproj file in Finder!): Slow
 
 ### Linux ( command line )
 
-You can simply navigate to the project folder and use `make Debug`, `make Release` or `make` and then execute with `./bin/example` .
-If you have exported the `OF_ROOT` path you can also use `make RunDebug` or `make RunRelease` or `make run` ( othewise you will get an error on execution as it won't find the path of the linked .so )
+Add the following line to any generated qtCreator projects:
+```
+cpp.rpaths: ["./libs"]
+```
+Then create a 'libs' folder in the 'bin' folder and place the libLeap.so in there.
 
 ### Adding ofxLeapMotion to an Existing Project
 
