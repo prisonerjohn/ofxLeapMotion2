@@ -10,6 +10,8 @@
 #include "ofxLeapMotion2.h"
 #include "ofxLeapMotionSimpleHand.h"
 
+FingerType ofxLeapMotion::fingerTypes[5] = { THUMB, INDEX, MIDDLE, RING, PINKY };
+
 ofxLeapMotion::ofxLeapMotion()
 {
     reset();
@@ -61,6 +63,9 @@ void ofxLeapMotion::setupGestures()
 
     // enables swipe gesture
     ourController->enableGesture(Gesture::TYPE_SWIPE);
+    ourController->config().setFloat("Gesture.Swipe.MinLength", 150.0);
+    ourController->config().setFloat("Gesture.Swipe.MinVelocity", 600);
+    ourController->config().save();
 
     // enables circle gesture
     ourController->enableGesture(Gesture::TYPE_CIRCLE);
@@ -77,13 +82,16 @@ void ofxLeapMotion::updateGestures()
         return;
     }
 
-    Leap::GestureList gestures = lastFrame.isValid() ? frame.gestures(lastFrame) : frame.gestures();
+    // Leap::GestureList gestures = lastFrame.isValid() ? frame.gestures(lastFrame) : frame.gestures();
+    Leap::GestureList gestures = frame.gestures();
+
+    iGestures = 0;
 
     lastFrame = frame;
 
-    size_t numGestures = gestures.count();
+    int numGestures = gestures.count();
 
-    for (size_t i = 0; i < numGestures; i++) {
+    for (int i = 0; i < numGestures; i++) {
 
         // screen tap gesture (forward poke / tap)
         if (gestures[i].type() == Leap::Gesture::TYPE_SCREEN_TAP) {
@@ -124,8 +132,6 @@ void ofxLeapMotion::updateGestures()
             else if (curSwipe.y > 3 && curSwipe.y < 20) {
                 iGestures = 5;
             }
-
-            // 3D swiping
             // swipe forward
             if (curSwipe.z < -5) {
                 iGestures = 7;
@@ -152,20 +158,49 @@ void ofxLeapMotion::updateGestures()
 
                 if (curAngle < 0) {
                     // clockwise rotation
-                    iGestures = 10;
+                    iGestures = 9;
                 } else {
                     // counter-clockwise rotation
-                    iGestures = 9;
+                    iGestures = 10;
                 }
             }
         }
 
-        // kill gesture when done
-        // gestures 5 & 6 are always in a STATE_STOP so we exclude
-        if (gestures[i].type() != 5 && gestures[i].type() != 6) {
-            if (gestures[i].state() == Leap::Gesture::STATE_STOP) {
-                iGestures = 0;
-            }
+        switch (gestures[i].state()) {
+        case Leap::Gesture::STATE_START:
+        {
+            //Handle starting gestures
+            ofLogVerbose("ofxLeapMotion2") << "Gesture state: " << "START";
+            GestureEventArgs gestureEventArgs;
+            gestureEventArgs.type = static_cast<GestureType>(iGestures);
+            gestureEventArgs.state = Leap::Gesture::STATE_START;
+            ofNotifyEvent(gestureEvent, gestureEventArgs);
+            break;
+        }
+        case Leap::Gesture::STATE_UPDATE:
+        {
+            //Handle continuing gestures
+            ofLogVerbose("ofxLeapMotion2") << "Gesture state: " << "UPDATE";
+            GestureEventArgs gestureEventArgs;
+            gestureEventArgs.type = static_cast<GestureType>(iGestures);
+            gestureEventArgs.state = Leap::Gesture::STATE_UPDATE;
+            ofNotifyEvent(gestureEvent, gestureEventArgs);
+            break;
+        }
+        case Leap::Gesture::STATE_STOP:
+        {
+            //Handle ending gestures
+            ofLogVerbose("ofxLeapMotion2") << "Gesture state: " << "STOP";
+            GestureEventArgs gestureEventArgs;
+            gestureEventArgs.type = static_cast<GestureType>(iGestures);
+            gestureEventArgs.state = Leap::Gesture::STATE_STOP;
+            ofNotifyEvent(gestureEvent, gestureEventArgs);
+            break;
+        }
+        default:
+            //Handle unrecognized states
+            ofLogVerbose("ofxLeapMotion2") << "Gesture state: " << "INVALID";
+            break;
         }
     }
 }
@@ -239,7 +274,7 @@ vector<ofxLeapMotionSimpleHand> ofxLeapMotion::getSimpleHands()
         curHand.roll = leapHands[i].palmNormal().roll();
         curHand.pitch = leapHands[i].direction().pitch();
 
-        fingerType fingerTypes[] = { THUMB, INDEX, MIDDLE, RING, PINKY };
+        FingerType fingerTypes[] = { THUMB, INDEX, MIDDLE, RING, PINKY };
         for (int j = 0; j < 5; j++) {
             const Finger& finger = leapHands[i].fingers()[fingerTypes[j]];
             ofxLeapMotionSimpleHand::simpleFinger f;

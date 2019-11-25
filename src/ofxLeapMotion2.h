@@ -6,9 +6,27 @@
 
 using namespace Leap;
 
+enum GestureType {
+    SCREEN_TAP = 1,
+    KEY_TAP,
+    SWIPE_RIGHT,
+    SWIPE_LEFT,
+    SWIPE_DOWN,
+    SWIPE_UP,
+    SWIPE_FORWARD,
+    SWIPE_BACK,
+    CIRCLE_ANTICLOCKWISE,
+    CIRCLE_CLOCKWISE };
+
+class GestureEventArgs : public ofEventArgs {
+
+public:
+    GestureType type;
+    Leap::Gesture::State state;
+};
+
 class ofxLeapMotion : public Listener {
 public:
-
     ofxLeapMotion();
     ~ofxLeapMotion();
     void reset();
@@ -38,6 +56,9 @@ public:
     // TODO: adding leap gesture support - JRW
     int iGestures;
 
+    static FingerType fingerTypes[5];
+
+    ofEvent<GestureEventArgs> gestureEvent;
 
 protected:
     //if you want to use the Leap Controller directly - inhereit ofxLeapMotion and implement this function

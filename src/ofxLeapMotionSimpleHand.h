@@ -3,11 +3,9 @@
 #include "ofMain.h"
 #include "Leap.h"
 
-
-enum fingerType { THUMB, INDEX, MIDDLE, RING, PINKY };
-
-
 using namespace Leap;
+
+enum FingerType { THUMB, INDEX, MIDDLE, RING, PINKY };
 
 class ofxLeapMotionSimpleHand {
 public:
@@ -22,7 +20,7 @@ public:
 
     void debugDraw();
 
-    map<fingerType, simpleFinger> fingers;
+    map<FingerType, simpleFinger> fingers;
     
     ofPoint handPos;
     ofPoint handNormal;
