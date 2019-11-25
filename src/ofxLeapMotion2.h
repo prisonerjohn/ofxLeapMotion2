@@ -260,7 +260,7 @@ public:
     //note: this function is called in a seperate thread - so GL commands here will cause the app to crash.
     //--------------------------------------------------------------
     virtual void onFrame(const Controller& contr){
-        ofLogVerbose("ofxLeapMotionApp - onFrame");
+        //ofLogVerbose("ofxLeapMotionApp - onFrame");
         
         onFrameInternal(contr); // call this if you want to use getHands() / isFrameNew() etc
     }

@@ -1,2 +1,5 @@
 .DS_Store
 example/example.qbs.user
+example/bin/example_debug
+example/build/
+
