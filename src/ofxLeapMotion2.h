@@ -53,9 +53,6 @@ public:
     ofPoint getMappedofPoint(Vector v);
     ofPoint getofPoint(Vector v);
 
-    // TODO: adding leap gesture support - JRW
-    int iGestures;
-
     static FingerType fingerTypes[5];
 
     ofEvent<GestureEventArgs> gestureEvent;
@@ -76,7 +73,7 @@ protected:
     vector<Hand> hands;
     Leap::Controller* ourController;
 
-    // TODO: added for Gesture support - JRW
+    int iGestures;
     Leap::Frame lastFrame;
 
     std::mutex ourMutex;
