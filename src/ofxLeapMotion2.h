@@ -1,5 +1,4 @@
 #pragma once
-
 #include "ofMain.h"
 #include "Leap.h"
 #include "ofxLeapMotionSimpleHand.h"
@@ -7,7 +6,8 @@
 using namespace Leap;
 
 enum GestureType {
-    SCREEN_TAP = 1,
+    INVALID = 0,
+    SCREEN_TAP,
     KEY_TAP,
     SWIPE_RIGHT,
     SWIPE_LEFT,
@@ -15,8 +15,9 @@ enum GestureType {
     SWIPE_UP,
     SWIPE_FORWARD,
     SWIPE_BACK,
-    CIRCLE_ANTICLOCKWISE,
-    CIRCLE_CLOCKWISE };
+    CIRCLE_CLOCKWISE,
+    CIRCLE_ANTICLOCKWISE
+};
 
 class GestureEventArgs : public ofEventArgs {
 
@@ -73,7 +74,7 @@ protected:
     vector<Hand> hands;
     Leap::Controller* ourController;
 
-    int iGestures;
+    GestureType gestureType;
     Leap::Frame lastFrame;
 
     std::mutex ourMutex;

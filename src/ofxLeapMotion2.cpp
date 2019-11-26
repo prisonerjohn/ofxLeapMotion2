@@ -12,6 +12,7 @@
 
 FingerType ofxLeapMotion::fingerTypes[5] = { THUMB, INDEX, MIDDLE, RING, PINKY };
 
+//--------------------------------------------------------------
 ofxLeapMotion::ofxLeapMotion()
 {
     reset();
@@ -19,6 +20,7 @@ ofxLeapMotion::ofxLeapMotion()
     ourController = new Leap::Controller();
 }
 
+//--------------------------------------------------------------
 ofxLeapMotion::~ofxLeapMotion()
 {
     //note we don't delete the controller as it causes a crash / mutex exception.
@@ -27,12 +29,14 @@ ofxLeapMotion::~ofxLeapMotion()
     /// JRW - threaded objects the Leap controller crashes on exit.
 }
 
+//--------------------------------------------------------------
 void ofxLeapMotion::reset()
 {
     currentFrameID = 0;
     preFrameId = -1;
 }
 
+//--------------------------------------------------------------
 void ofxLeapMotion::close()
 {
     if (ourController) {
@@ -51,7 +55,6 @@ void ofxLeapMotion::open()
     ourController->addListener(*this);
 }
 
-// TODO: adding leap gesture support - JRW
 //--------------------------------------------------------------
 void ofxLeapMotion::setupGestures()
 {
@@ -71,22 +74,17 @@ void ofxLeapMotion::setupGestures()
     ourController->enableGesture(Gesture::TYPE_CIRCLE);
 }
 
-// TODO: adding leap gesture support - JRW
 //--------------------------------------------------------------
 void ofxLeapMotion::updateGestures()
 {
-
     Leap::Frame frame = ourController->frame();
-
     if (lastFrame == frame) {
         return;
     }
 
-    // Leap::GestureList gestures = lastFrame.isValid() ? frame.gestures(lastFrame) : frame.gestures();
     Leap::GestureList gestures = frame.gestures();
 
-    iGestures = 0;
-
+    gestureType = INVALID;
     lastFrame = frame;
 
     int numGestures = gestures.count();
@@ -97,17 +95,13 @@ void ofxLeapMotion::updateGestures()
         if (gestures[i].type() == Leap::Gesture::TYPE_SCREEN_TAP) {
             Leap::ScreenTapGesture tap = gestures[i];
             ofVec3f tapLoc = getMappedofPoint(tap.position());
-
-            iGestures = 1;
-
+            gestureType = SCREEN_TAP;
         }
 
         // key tap gesture (down tap)
         else if (gestures[i].type() == Leap::Gesture::TYPE_KEY_TAP) {
             Leap::KeyTapGesture tap = gestures[i];
-
-            iGestures = 2;
-
+            gestureType = KEY_TAP;
         }
 
         // swipe gesture
@@ -116,29 +110,29 @@ void ofxLeapMotion::updateGestures()
             Leap::Vector diff = 0.04f * (swipe.position() - swipe.startPosition());
             ofVec3f curSwipe(diff.x, -diff.y, diff.z);
 
-            // swipe left
-            if (curSwipe.x < -3 && curSwipe.x > -20) {
-                iGestures = 4;
-            }
             // swipe right
-            else if (curSwipe.x > 3 && curSwipe.x < 20) {
-                iGestures = 3;
+            if (curSwipe.x > 3 && curSwipe.x < 20) {
+                gestureType = SWIPE_RIGHT;
             }
-            // swipe up
-            if (curSwipe.y < -3 && curSwipe.y > -20) {
-                iGestures = 6;
+            // swipe left
+            else if (curSwipe.x < -3 && curSwipe.x > -20) {
+                gestureType = SWIPE_LEFT;
             }
             // swipe down
-            else if (curSwipe.y > 3 && curSwipe.y < 20) {
-                iGestures = 5;
+            if (curSwipe.y > 3 && curSwipe.y < 20) {
+                gestureType = SWIPE_DOWN;
+            }
+            // swipe up
+            else if (curSwipe.y < -3 && curSwipe.y > -20) {
+                gestureType = SWIPE_UP;
             }
             // swipe forward
             if (curSwipe.z < -5) {
-                iGestures = 7;
+                gestureType = SWIPE_FORWARD;
             }
             // swipe back
             else if (curSwipe.z > 5) {
-                iGestures = 8;
+                gestureType = SWIPE_BACK;
             }
         }
 
@@ -148,7 +142,6 @@ void ofxLeapMotion::updateGestures()
             float progress = circle.progress();
 
             if (progress >= 1.0f) {
-
                 ofVec3f center = getMappedofPoint(circle.center());
                 ofVec3f normal(circle.normal().x, circle.normal().y, circle.normal().z);
                 double curAngle = 6.5;
@@ -158,48 +151,41 @@ void ofxLeapMotion::updateGestures()
 
                 if (curAngle < 0) {
                     // clockwise rotation
-                    iGestures = 9;
+                    gestureType = CIRCLE_CLOCKWISE;
                 } else {
                     // counter-clockwise rotation
-                    iGestures = 10;
+                    gestureType = CIRCLE_ANTICLOCKWISE;
                 }
             }
         }
 
         switch (gestures[i].state()) {
-        case Leap::Gesture::STATE_START:
-        {
-            //Handle starting gestures
-            ofLogVerbose("ofxLeapMotion2") << "Gesture state: " << "START";
+        case Leap::Gesture::STATE_START: {
+            ofLogVerbose("ofxLeapMotion2") << "Gesture state: START";
             GestureEventArgs gestureEventArgs;
-            gestureEventArgs.type = static_cast<GestureType>(iGestures);
+            gestureEventArgs.type = gestureType;
             gestureEventArgs.state = Leap::Gesture::STATE_START;
             ofNotifyEvent(gestureEvent, gestureEventArgs);
             break;
         }
-        case Leap::Gesture::STATE_UPDATE:
-        {
-            //Handle continuing gestures
-            ofLogVerbose("ofxLeapMotion2") << "Gesture state: " << "UPDATE";
+        case Leap::Gesture::STATE_UPDATE: {
+            ofLogVerbose("ofxLeapMotion2") << "Gesture state: UPDATE";
             GestureEventArgs gestureEventArgs;
-            gestureEventArgs.type = static_cast<GestureType>(iGestures);
+            gestureEventArgs.type = gestureType;
             gestureEventArgs.state = Leap::Gesture::STATE_UPDATE;
             ofNotifyEvent(gestureEvent, gestureEventArgs);
             break;
         }
-        case Leap::Gesture::STATE_STOP:
-        {
-            //Handle ending gestures
-            ofLogVerbose("ofxLeapMotion2") << "Gesture state: " << "STOP";
+        case Leap::Gesture::STATE_STOP: {
+            ofLogVerbose("ofxLeapMotion2") << "Gesture state: STOP";
             GestureEventArgs gestureEventArgs;
-            gestureEventArgs.type = static_cast<GestureType>(iGestures);
+            gestureEventArgs.type = gestureType;
             gestureEventArgs.state = Leap::Gesture::STATE_STOP;
             ofNotifyEvent(gestureEvent, gestureEventArgs);
             break;
         }
         default:
-            //Handle unrecognized states
-            ofLogVerbose("ofxLeapMotion2") << "Gesture state: " << "INVALID";
+            ofLogVerbose("ofxLeapMotion2") << "Gesture state: INVALID";
             break;
         }
     }
@@ -208,25 +194,25 @@ void ofxLeapMotion::updateGestures()
 //--------------------------------------------------------------
 void ofxLeapMotion::onInit(const Controller& controller)
 {
-    ofLogVerbose("ofxLeapMotionApp - onInit");
+    ofLogVerbose("ofxLeapMotion - onInit");
 }
 
 //--------------------------------------------------------------
 void ofxLeapMotion::onConnect(const Controller& contr)
 {
-    ofLogWarning("ofxLeapMotionApp - onConnect");
+    ofLogNotice("ofxLeapMotion - Leap controller connected");
 }
 
 //--------------------------------------------------------------
 void ofxLeapMotion::onDisconnect(const Controller& contr)
 {
-    ofLogWarning("ofxLeapMotionApp - onDisconnect");
+    ofLogNotice("ofxLeapMotion - Leap controller disconnected");
 }
 
 //--------------------------------------------------------------
 void ofxLeapMotion::onExit(const Controller& contr)
 {
-    ofLogWarning("ofxLeapMotionApp - onExit");
+    ofLogVerbose("ofxLeapMotion - onExit");
 }
 
 //if you want to use the Leap Controller directly - inhereit ofxLeapMotion and implement this function
