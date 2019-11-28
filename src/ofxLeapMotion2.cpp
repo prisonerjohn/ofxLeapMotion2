@@ -17,6 +17,12 @@ ofxLeapMotion::ofxLeapMotion()
 {
     reset();
     resetMapping();
+#ifdef TARGET_LINUX
+   string count = ofSystem("ps -A | grep -cw leapd");
+   if(stoi(count,nullptr) == 0) {
+    ofLogNotice() << "Leap daemon not running, run 'sudo leapd' to start it.";
+   }
+#endif
     ourController = new Leap::Controller();
 }
 
