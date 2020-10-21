@@ -44,7 +44,7 @@ void ofApp::update(){
 		leap.setMappingY(90, 490, -ofGetHeight()/2, ofGetHeight()/2);
         leap.setMappingZ(-150, 150, -200, 200);
         
-        fingerType fingerTypes[] = {THUMB, INDEX, MIDDLE, RING, PINKY};
+        FingerType fingerTypes[] = {THUMB, INDEX, MIDDLE, RING, PINKY};
         
         for(int i = 0; i < simpleHands.size(); i++){
             for (int f=0; f<5; f++) {
@@ -72,7 +72,7 @@ void ofApp::update(){
      leap.setMappingY(90, 490, -ofGetHeight()/2, ofGetHeight()/2);
      leap.setMappingZ(-150, 150, -200, 200);
      
-     fingerType fingerTypes[] = {THUMB, INDEX, MIDDLE, RING, PINKY};
+     FingerType fingerTypes[] = {THUMB, INDEX, MIDDLE, RING, PINKY};
      
      for(int i = 0; i < hands.size(); i++){
      for(int j = 0; j < 5; j++){
@@ -111,7 +111,7 @@ void ofApp::draw(){
 	ofPopMatrix();
     
     
-    fingerType fingerTypes[] = {THUMB, INDEX, MIDDLE, RING, PINKY};
+    FingerType fingerTypes[] = {THUMB, INDEX, MIDDLE, RING, PINKY};
     
     for(int i = 0; i < simpleHands.size(); i++){
         bool isLeft        = simpleHands[i].isLeft;
