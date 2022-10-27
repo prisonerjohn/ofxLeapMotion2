@@ -1,9 +1,11 @@
 #pragma once
 
-#include "ofMain.h"
+#include <map>
+
 #include "Leap.h"
 
-using namespace Leap;
+#include "ofPoint.h"
+#include "ofVectorMath.h"
 
 enum FingerType { THUMB, INDEX, MIDDLE, RING, PINKY };
 
@@ -20,7 +22,7 @@ public:
 
     void debugDraw();
 
-    map<FingerType, simpleFinger> fingers;
+    std::map<FingerType, simpleFinger> fingers;
     
     ofPoint handPos;
     ofPoint handNormal;

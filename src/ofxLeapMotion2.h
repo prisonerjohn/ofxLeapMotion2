@@ -1,7 +1,9 @@
 #pragma once
-#include "ofMain.h"
+
 #include "Leap.h"
 #include "ofxLeapMotionSimpleHand.h"
+
+#include "ofEvents.h"
 
 using namespace Leap;
 
@@ -40,8 +42,8 @@ public:
     virtual void onDisconnect(const Controller& contr);
     virtual void onExit(const Controller& contr);
     virtual void onFrame(const Controller& contr);
-    vector<Hand> getLeapHands();
-    vector<ofxLeapMotionSimpleHand> getSimpleHands();
+    std::vector<Hand> getLeapHands();
+    std::vector<ofxLeapMotionSimpleHand> getSimpleHands();
     bool isConnected();
     void setReceiveBackgroundFrames(bool bReceiveBg);
     bool isFrameNew();
@@ -71,7 +73,7 @@ protected:
     float yOffsetIn, yOffsetOut, yScale;
     float zOffsetIn, zOffsetOut, zScale;
 
-    vector<Hand> hands;
+    std::vector<Hand> hands;
     Leap::Controller* ourController;
 
     GestureType gestureType;

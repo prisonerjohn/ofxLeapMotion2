@@ -10,6 +10,8 @@
 #include "ofxLeapMotion2.h"
 #include "ofxLeapMotionSimpleHand.h"
 
+#include "ofLog.h"
+
 FingerType ofxLeapMotion::fingerTypes[5] = { THUMB, INDEX, MIDDLE, RING, PINKY };
 
 //--------------------------------------------------------------
@@ -233,10 +235,10 @@ void ofxLeapMotion::onFrame(const Controller& contr)
 
 //Simple access to the hands
 //--------------------------------------------------------------
-vector<Hand> ofxLeapMotion::getLeapHands()
+std::vector<Hand> ofxLeapMotion::getLeapHands()
 {
 
-    vector<Hand> handsCopy;
+    std::vector<Hand> handsCopy;
     if (ourMutex.try_lock()) {
         handsCopy = hands;
         ourMutex.unlock();
@@ -246,11 +248,11 @@ vector<Hand> ofxLeapMotion::getLeapHands()
 }
 
 //--------------------------------------------------------------
-vector<ofxLeapMotionSimpleHand> ofxLeapMotion::getSimpleHands()
+std::vector<ofxLeapMotionSimpleHand> ofxLeapMotion::getSimpleHands()
 {
 
-    vector<ofxLeapMotionSimpleHand> simpleHands;
-    vector<Hand> leapHands = getLeapHands();
+    std::vector<ofxLeapMotionSimpleHand> simpleHands;
+    std::vector<Hand> leapHands = getLeapHands();
 
     for (int i = 0; i < leapHands.size(); i++) {
         ofxLeapMotionSimpleHand curHand;

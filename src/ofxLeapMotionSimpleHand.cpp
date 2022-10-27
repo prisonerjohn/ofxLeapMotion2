@@ -1,6 +1,11 @@
 
 #include "ofxLeapMotionSimpleHand.h"
 
+#include "of3dGraphics.h"
+#include "of3dUtils.h"
+#include "ofGraphics.h"
+#include "ofLight.h"
+
     void ofxLeapMotionSimpleHand::debugDraw()
     {
         ofPushStyle();
